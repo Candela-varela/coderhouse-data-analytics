@@ -1,0 +1,17 @@
+let
+    Origen = Csv.Document(File.Contents("C:\Users\admin\Downloads\Power Bi\Segunda Entrega OP\retail_store_sales.csv"),[Delimiter=",", Columns=11, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+    #"Encabezados promovidos" = Table.PromoteHeaders(Origen, [PromoteAllScalars=true]),
+    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"Transaction ID", type text}, {"Customer ID", type text}, {"Category", type text}, {"Item", type text}, {"Price Per Unit", type number}, {"Quantity", Int64.Type}, {"Total Spent", Int64.Type}, {"Payment Method", type text}, {"Location", type text}, {"Transaction Date", type date}, {"Discount Applied", type logical}}),
+    // En este punyo se modifica el tipo de dato del precio por unidad, el mismo era tipo de dato número entero, y lo modifique a numero decimal porque son precios.
+    #"Filas filtradas" = Table.SelectRows(#"Tipo cambiado", each ([Location] = "In-store")),
+    // En este punto se realiza un filtro, para visualizar las ventas que son en la tienda física.
+    #"MiTransformacionManual" = Table.RenameColumns(#"Filas filtradas",{{"Price Per Unit", "Precio_Unitario"}, {"Quantity", "Cantidad"}, {"Total Spent", "Total_Vendido"}})
+    // En este punto se cambiaron los encabezados de precio, cantidad y total vendido para que sea mas intuitivo el analisis.
+in
+    #"MiTransformacionManual"
+
+
+1. ¿Por qué es útil para un analista de datos entender la estructura let … in? Porque el código M es el que regula la totalidad del funcionamiento de Power Bi. Si bien, se puede utilizar la plataforma sin conocer el código que se encuentra detrás, su entendimiento es clave para poder realizar operaciones que no se encuentren estandarizadas, para la personalización de consultas, para poder controlar el proceso que se realizo sobre un data set, y para volver este proceso mas ''amigable'' mediante el uso de renombres en los pasos aplicados.  
+2. ¿Qué significa que el lenguaje M sea Case Sensitive y cuál es la consecuencia práctica de ignorarlo? Significa que es sensible al uso de mayúsculas y minúsculas. No es lo mismo escribir total_ventas que Total_Ventas. Ignorarlo produciría errores en el procesamiento del código. 
+3. ¿Por qué elegiste ese dataset y qué criterios usaste para seleccionarlo? El Dataset seleccionado fue el siguiente: https://www.kaggle.com/code/mahmoudredagamail/retail-store-sales-dirty-for-data-cleaning/input?utm_source=chatgpt.com&select=retail_store_sales.csv
+Fue seleccionado porque proviene de un repositorio público, cuenta con 11 columnas, en el formato solicitado y con varios errores que permiten la realización de la práctica. 
